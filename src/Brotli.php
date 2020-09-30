@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HelloNico\Brotli;
 
+use Exception;
 use mikehaertl\shellcommand\Command;
 use HelloNico\Brotli\Exception\BrotliException;
 use HelloNico\Brotli\Exception\CorruptInputException;
@@ -28,7 +29,7 @@ final class Brotli
      * @param int $quality Compression level (0-11)
      * @return string The compressed data
      * @throws BrotliException If quality is invalid
-     * @throws ExceptionInterface In case something went wrong with process
+     * @throws Exception In case something went wrong with process
      */
     public static function compress(string $data, int $quality = 11): string
     {
@@ -43,7 +44,7 @@ final class Brotli
      * @param string $data The compressed data
      * @return string The uncompressed data
      * @throws BrotliException If data is not valid Brotli
-     * @throws ExceptionInterface In case something went wrong with process
+     * @throws Exception In case something went wrong with process
      */
     public static function uncompress(string $data): string
     {
@@ -68,6 +69,8 @@ final class Brotli
             if (strpos($exception->getMessage(), 'corrupt input') === 0) {
                 throw CorruptInputException::create($exception);
             }
+
+            throw $exception;
         }
 
         return $command->getOutput();
